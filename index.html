@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UST iDEC – Happy Birthday Killadiz Athira Sechi</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+    display: flex;
+    height: 100vh;
+    background: #f4f6f9;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+    width: 85px;
+    background: #1f2937;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.sidebar div {
+    color: #9ca3af;
+    margin: 18px 0;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.sidebar div:hover {
+    color: #ffffff;
+}
+
+/* ===== Main ===== */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== Topbar ===== */
+.topbar {
+    background: #0f172a;
+    color: white;
+    padding: 14px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.topbar h1 {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.topbar-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.idec-btn {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.idec-btn:hover {
+    background: #334155;
+}
+
+/* ===== Content ===== */
+.content {
+    padding: 25px;
+    overflow-y: auto;
+}
+
+/* ===== Dashboard Cards ===== */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.card h3 {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 10px;
+}
+
+.card .value {
+    font-size: 26px;
+    font-weight: bold;
+    color: #0f172a;
+}
+
+/* ===== Game Area ===== */
+.game-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    padding: 20px;
+}
+
+canvas {
+    background: #0f172a;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+}
+
+.footer-note {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #64748b;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <div>🏠<br>Home</div>
+    <div>📊<br>Tracker</div>
+    <div>🏢<br>Facilities</div>
+    <div>👥<br>Users</div>
+    <div>🚗<br>Vehicles</div>
+    <div>⚙<br>Settings</div>
+</div>
+
+<div class="main">
+
+    <div class="topbar">
+        <h1>UST iDEC – Happy Birthday Killadiz Athira Sechi 🎂</h1>
+        <div class="topbar-actions">
+            <button class="idec-btn" onclick="togglePause()">Pause</button>
+            <button class="idec-btn" onclick="restart()">Restart</button>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <div class="cards">
+            <div class="card">
+                <h3>Age Version</h3>
+                <div class="value">v∞.0</div>
+            </div>
+            <div class="card">
+                <h3>Wisdom Engine</h3>
+                <div class="value">Ultra Pro Max</div>
+            </div>
+            <div class="card">
+                <h3>Scold Alerts</h3>
+                <div class="value">Critical ⚠</div>
+            </div>
+            <div class="card">
+                <h3>Delulu Mode</h3>
+                <div class="value">Always ON 🛡</div>
+            </div>
+        </div>
+
+        <div class="game-container">
+            <canvas id="canvas" width="700" height="500"></canvas>
+            <div class="footer-note">
+                🎯 Each boundary hit spawns more chaos (and blessings).
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<img id="faceImg" src="assets/images/face.png" style="display:none;">
+<audio id="voiceAudio" src="assets/audio/voice.wav"></audio>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const center = { x: 350, y: 250 };
+const radius = 200;
+
+let balls = [];
+let isPaused = false;
+
+class Ball {
+    constructor(x = center.x, y = center.y) {
+        this.x = x;
+        this.y = y;
+        this.vx = (Math.random() - 0.5) * 6;
+        this.vy = (Math.random() - 0.5) * 6;
+        this.r = 40;
+        this.cooldown = 0;
+    }
+
+    update() {
+        if (isPaused) return;
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        const dx = this.x - center.x;
+        const dy = this.y - center.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        if (dist + this.r >= radius && this.cooldown <= 0) {
+
+            const nx = dx / dist;
+            const ny = dy / dist;
+            const dot = this.vx * nx + this.vy * ny;
+
+            this.vx -= 2 * dot * nx;
+            this.vy -= 2 * dot * ny;
+
+            playVoice();
+
+            // Spawn new ball at center
+            balls.push(new Ball());
+
+            this.cooldown = 10; // prevent rapid multi-spawn glitch
+        }
+
+        if (this.cooldown > 0) this.cooldown--;
+    }
+
+    draw() {
+        const img = document.getElementById("faceImg");
+        ctx.drawImage(img, this.x - this.r, this.y - this.r, this.r*2, this.r*2);
+    }
+}
+
+function drawBoundary() {
+    ctx.strokeStyle = "#14b8a6";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, radius, 0, Math.PI * 2);
+    ctx.stroke();
+}
+
+function playVoice() {
+    const audio = document.getElementById("voiceAudio");
+    const clone = audio.cloneNode();
+    clone.volume = 0.6;
+    clone.play().catch(()=>{});
+}
+
+function togglePause() {
+    isPaused = !isPaused;
+    document.querySelectorAll(".idec-btn")[0].innerText = isPaused ? "Resume" : "Pause";
+}
+
+function restart() {
+    balls = [];
+    balls.push(new Ball());
+}
+
+function loop() {
+    ctx.fillStyle = "#0f172a";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    drawBoundary();
+
+    balls.forEach(ball => {
+        ball.update();
+        ball.draw();
+    });
+
+    requestAnimationFrame(loop);
+}
+
+/* Unlock audio */
+document.body.addEventListener("click", () => {
+    const audio = document.getElementById("voiceAudio");
+    audio.play().then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+    }).catch(()=>{});
+}, { once: true });
+
+balls.push(new Ball());
+loop();
+</script>
+
+</body>
+</html>
